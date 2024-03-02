@@ -5,7 +5,6 @@
 # imports
 import csv
 import PySimpleGUI as sg
-import itertools
 
 # Set the theme
 sg.theme("BrightColors")
@@ -28,7 +27,7 @@ alldata = []
 
 
 # Read data from CSV file
-with open('Data/data.csv', 'r') as file:
+with open('data.csv', 'r') as file:
     # setting the reader to be a csv dictionary reader
     reader = csv.DictReader(file)
     # going through each column
@@ -46,6 +45,8 @@ with open('Data/data.csv', 'r') as file:
 
 for textbook, subject, seller, purchase, purchaser, sale, rating in zip(textbooks, subjects, seller, purchasePrices, purchaser, salePrices, rating):
     alldata.append([textbook, subject, seller, purchase, purchaser, sale, rating])
+
+
 
 headers = ['textbook', 'subject', 'seller', 'purchased', 'purchaser', 'sale price', 'rating']
 # Create the table separate from the layout
@@ -65,11 +66,10 @@ layout = [[tbl1],
            [sg.Text("New Rating (1-5): "), sg.Input(key="txt_rating")],
            [sg.Button("Rate & Save", key='save')]]]
 
-
-
 # Create window
 window = sg.Window("Prac Sac", layout, icon='', size=(1200, 400), resizable=True)
 print(tabledata)
+
 # while loop to enable button functionality.
 while True:
     event, values = window.read()
@@ -87,7 +87,8 @@ while True:
         textbooktxt = str(values["txt_search1"])
         purchasertxt = str(values["txt_search2"])
         search_parts = [str(values["txt_search1"]), str(values["txt_search2"])]
-        with open('Data/data.csv', 'r') as file:
+
+        with open('data.csv', 'r') as file:
             for row in file:
                 if all([x in row for x in search_parts]):
                     searchdata.append(row)
@@ -96,6 +97,6 @@ while True:
             tabledata.append(value.strip().split(','))
 
         window["table"].update(values=tabledata)  # No need to skip headers in the update
-        print()
+
 # Close the window
 window.close()
