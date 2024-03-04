@@ -6,8 +6,8 @@
 import csv
 import PySimpleGUI as sg
 
-# Set the theme
-sg.theme("BrightColors")
+
+sg.theme("BrightColors") # Set the theme
 
 
 # Creating empty lists ready to be appended to
@@ -19,19 +19,20 @@ seller = []
 purchaser = []
 rating = []
 
+# Creating empty lists related to searching ready to be appended to
 searchdata = []
 search_parts = []
 
+# Creating empty lists for displaying data on to GUI
 tabledata = []
 alldata = []
 
 
-# Read data from CSV file
-with open('Data/newdata.csv') as file:
-    # setting the reader to be a csv dictionary reader
-    reader = csv.DictReader(file)
-    # going through each column
-    for col in reader:
+
+with open('Data/newdata.csv') as file: # Read data from CSV file
+    reader = csv.DictReader(file) # setting the reader to be a csv dictionary reader
+    
+    for col in reader: # going through each column
         # Taking all the data in each column with the corresponding name and appending it to the list
         purchasePrices.append(col['Purchase price'])
         salePrices.append(col['Sale price'])
@@ -46,9 +47,8 @@ with open('Data/newdata.csv') as file:
 for textbook, subject, seller, purchase, purchaser, sale, rating in zip(textbooks, subjects, seller, purchasePrices, purchaser, salePrices, rating):
     alldata.append([textbook, subject, seller, purchase, purchaser, sale, rating])
 
+headers = ['Textbook', 'Subject', 'Seller', 'Purchase price', 'Purchaser', 'Sale price', 'Rating'] # create list of CORRECTLY named headers
 
-# create list of CORRECTLY named headers
-headers = ['Textbook', 'Subject', 'Seller', 'Purchase price', 'Purchaser', 'Sale price', 'Rating']
 # Create the table separate from the layout
 tbl1 = sg.Table(values=alldata, headings=headers,
                 auto_size_columns=True,
@@ -68,11 +68,10 @@ layout = [[tbl1],
 
 
 
-# Create window
-window = sg.Window("Prac Sac", layout, icon='', size=(1200, 400), resizable=True)
+window = sg.Window("Prac Sac", layout, icon='', size=(1200, 400), resizable=True) # Create window
 
-# while loop to enable button functionality.
-while True:
+
+while True: # while loop to enable button functionality.
     event, values = window.read()
 
     # if statement to check if EXIT button has been pressed if so the loop breaks and the window is exited
@@ -83,55 +82,56 @@ while True:
     if event == "Display All":
         window["table"].update(values=alldata)
     
-    # if statement to check if search button is pressed.
-    if event == "Search":
-        # Search data list is cleared of all data inside
-        searchdata.clear()
-        # Table data is cleared of all data inside
-        # Table data is the list of lists of just searched data
-        tabledata.clear()
 
-        # set strings as entered data into text boxes
-        textbooktxt = str(values["txt_search1"])
-        purchasertxt = str(values["txt_search2"])
-        #create list of both text boxes entered data
-        search_parts = [str(values["txt_search1"]), str(values["txt_search2"])]
-        # Open dataset in read mode to go through each row to find both text
-        with open('Data/newdata.csv', 'r') as file:
-            for row in file:
-                if all([x in row for x in search_parts]):
-                    searchdata.append(row)
+    if event == "Search": # if statement to check if search button is pressed.
+
+        searchdata.clear() # Search data list is cleared of all data inside
+        
+        tabledata.clear() # Table data is cleared of all data inside
+                          # Table data is the list of lists of just searched data
+
+        # set strings as data entered into text boxes
+        textbooktxt = str(values["txt_search1"].lower) 
+        purchasertxt = str(values["txt_search2"].lower)
+        
+        search_parts = [str(values["txt_search1"]), str(values["txt_search2"])] #create list of both text boxes entered data
+        
+        with open('Data/newdata.csv', 'r') as file: # Open dataset in read mode to go through each row to find both text
+            for row in file: 
+                if all([x in row for x in search_parts]): # checks whether each element (x) in search_parts is present in the iterable row
+                    searchdata.append(row) # adds that row to search data
 
         for value in searchdata:
-            tabledata.append(value.strip().split(','))
+            tabledata.append(value.strip().split(',')) # .split splits the modified string (after stripping) into a list of substrings using the comma
+                                                       # .strip removes any leading and trailing whitespace characters
 
-        window["table"].update(values=tabledata)
-        print()
+        window["table"].update(values=tabledata) # updates table with searched data
 
-    if event == "save":
-        allowedvalues = ['1','2','3','4','5']
+    if event == "save": # if save button is pressed
+        allowedvalues = ['1','2','3','4','5'] # list of values that you are allowed
+
+        # set strings as data entered into text boxes
         selected_textbook = str(values["txt_search1"])
         selected_purchaser = str(values["txt_search2"])
         enteredRating = str(values["txt_rating"])
-        if enteredRating not in allowedvalues:
-            sg.popup_error("Please rate 1-5")
-            continue
 
-        for i, row in enumerate(alldata):
-            print(row[0])
-            if selected_textbook in row[0] and selected_purchaser in row[4]:
-                alldata[i][-1] = enteredRating
+        
+        if enteredRating not in allowedvalues: # check to see if the entered rating is not in the allowed values list
+            sg.popup_error("Please rate 1-5") # give the user a error saying to stop being dumb
+            continue # restart the loop to belay the rating
 
-        with open('Data/newdata.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(headers)
-            writer.writerows(alldata)
+        for i, row in enumerate(alldata): # 
+            if selected_textbook in row[0] and selected_purchaser in row[4]: # if statement to check if the selected book and purchaser is in the same row 
+                alldata[i][-1] = enteredRating # if it is in the same row ([i]) it using ([-1]) selects the last column of the row and sets it to the rating
 
-        # for alldata in alldata:
+        with open('Data/newdata.csv', 'w', newline='') as file: # open / make the new csv file in write mode
+                                                                # newline='' ensures that the file object does not perform any newline translation
+            
+            writer = csv.writer(file) # set the csv writer 
+            writer.writerow(headers) # write the headings as the CORRECT headings
+            writer.writerows(alldata) # write the data to the new csv file
 
-        print(alldata)
-        window["table"].update(values=alldata)
+        window["table"].update(values=alldata) # updates table with searched data
 
 
-# Close the window
-window.close()
+window.close() # Close the window
