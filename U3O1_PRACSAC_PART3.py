@@ -1,6 +1,6 @@
 # Programmer: Benjamin Wilkinson
-# Date: 22/02/2024
-# Description: Calculation of Profits GUI
+# Date: 04/03/2024
+# Description: Textbook GUI search and rate
 
 # imports
 import csv
