@@ -5,7 +5,6 @@
 # imports
 import csv
 import PySimpleGUI as sg
-import itertools
 
 # Set the theme
 sg.theme("BrightColors")
@@ -43,10 +42,12 @@ with open('Data/newdata.csv') as file:
         rating.append(col['Rating'])
 
 
-
+# Append the all data into list of lists
 for textbook, subject, seller, purchase, purchaser, sale, rating in zip(textbooks, subjects, seller, purchasePrices, purchaser, salePrices, rating):
     alldata.append([textbook, subject, seller, purchase, purchaser, sale, rating])
 
+
+# create list of CORRECTLY named headers
 headers = ['Textbook', 'Subject', 'Seller', 'Purchase price', 'Purchaser', 'Sale price', 'Rating']
 # Create the table separate from the layout
 tbl1 = sg.Table(values=alldata, headings=headers,
@@ -69,24 +70,33 @@ layout = [[tbl1],
 
 # Create window
 window = sg.Window("Prac Sac", layout, icon='', size=(1200, 400), resizable=True)
-print(tabledata)
+
 # while loop to enable button functionality.
 while True:
     event, values = window.read()
+
+    # if statement to check if EXIT button has been pressed if so the loop breaks and the window is exited
     if event in (None, "Exit"):
         break
 
+    # if statement to check if display all button is pressed and if so the table is updated with a variable that is the list of lists of all data from the CSV.
     if event == "Display All":
         window["table"].update(values=alldata)
-        print(tabledata)
-
+    
+    # if statement to check if search button is pressed.
     if event == "Search":
+        # Search data list is cleared of all data inside
         searchdata.clear()
+        # Table data is cleared of all data inside
+        # Table data is the list of lists of just searched data
         tabledata.clear()
 
+        # set strings as entered data into text boxes
         textbooktxt = str(values["txt_search1"])
         purchasertxt = str(values["txt_search2"])
+        #create list of both text boxes entered data
         search_parts = [str(values["txt_search1"]), str(values["txt_search2"])]
+        # Open dataset in read mode to go through each row to find both text
         with open('Data/newdata.csv', 'r') as file:
             for row in file:
                 if all([x in row for x in search_parts]):
