@@ -1,3 +1,4 @@
+
 # Programmer: Benjamin Wilkinson
 # Date: 04/03/2024
 # Description: Textbook GUI search and rate
@@ -85,13 +86,13 @@ while True:  # while loop to enable button functionality.
                             # Table data is the list of lists of just searched data
 
         # set strings as data entered into text boxes
-        textbooktxt = str(values["txt_search1"].lower)
-        purchasertxt = str(values["txt_search2"].lower)
+        textbooktxt = str(values["txt_search1"].lower())
+        purchasertxt = str(values["txt_search2"].lower())
         searchParts = [str(values["txt_search1"]),str(values["txt_search2"])]  # create list of both text boxes entered data
 
         with open('newdata.csv','r') as file:  # Open dataset in read mode to go through each row to find both text
             for row in file:
-                if all([x in row for x in searchParts]):  # checks whether each element (x) in search_parts is present in the iterable row
+                if all([x in row.lower() for x in searchParts]):  # checks whether each element (x) in search_parts is present in the iterable row
                     searchData.append(row)  # adds that row to search data
 
         for value in searchData:
@@ -105,8 +106,8 @@ while True:  # while loop to enable button functionality.
         allowedvalues = ['1', '2', '3', '4', '5']  # list of values that you are allowed
 
         # set strings as data entered into text boxes
-        selected_textbook = str(values["txt_search1"])
-        selected_purchaser = str(values["txt_search2"])
+        selected_textbook = str(values["txt_search1"].lower())
+        selected_purchaser = str(values["txt_search2"].lower())
         enteredRating = str(values["txt_rating"])
 
         if enteredRating not in allowedvalues:  # check to see if the entered rating is not in the allowed values list
@@ -114,7 +115,7 @@ while True:  # while loop to enable button functionality.
             continue  # restart the loop to belay the rating
 
         for i, row in enumerate(allData):  #
-            if selected_textbook in row[0] and selected_purchaser in row[4]:  # if statement to check if the selected book and purchaser is in the same row
+            if selected_textbook in row[0].lower() and selected_purchaser in row[4].lower():  # if statement to check if the selected book and purchaser is in the same row
                 allData[i][-1] = enteredRating  # if it is in the same row ([i]) it using ([-1]) selects the last column of the row and sets it to the rating
 
         with open('newdata.csv', 'w', newline='') as file:  # open / make the new csv file in write mode
@@ -133,7 +134,7 @@ while True:  # while loop to enable button functionality.
 
             with open('newdata.csv','r') as file:  # Open dataset in read mode to go through each row to find both text
                 for row in file:
-                    if all([x in row for x in searchParts]):  # checks whether each element (x) in search_parts is present in the iterable row
+                    if all([x in row.lower() for x in searchParts.lower()]):  # checks whether each element (x) in search_parts is present in the iterable row
                         searchData.append(row)  # adds that row to search data
 
             for value in searchData:
