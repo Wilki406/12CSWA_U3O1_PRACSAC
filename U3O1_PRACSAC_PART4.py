@@ -60,7 +60,7 @@ tbl1 = sg.Table(values=allData, headings=headers,
 layout = [[tbl1],
           [[sg.Button("Display All"), sg.Push(), sg.Button("Exit"), ],
            [sg.Text("Rate a textbook: ")],
-           [sg.Text("Textbook: "), sg.Input(key="txt_search1", size=(30, 80),),sg.Push(),sg.Text("Filter by: "),sg.Combo(['Subject','Textbook'], key='combo',default_value=""), sg.Push(), sg.Push()],
+           [sg.Text("Textbook: "), sg.Input(key="txt_search1", size=(30, 80),),sg.Push(),sg.Text("Filter by: "),sg.Combo(['Textbook','Subject'], key='combo',default_value=""), sg.Push(), sg.Push()],
            [sg.Text("Purchaser: "), sg.Input(key="txt_search2",size=(30, 80)),sg.Push(),sg.Text("Enter filter keyword: "),sg.Input(key="filterkeyword"), sg.Push()],
            [sg.Button("Search"),sg.Push(),sg.Push(),sg.Text("Search: "),sg.Input(key="filteredsearch",enable_events=True,), sg.Push()],
            [sg.Text("New Rating (1-5): "), sg.Input(key="txt_rating",size=(10, 80)),sg.Push(),sg.Push(),sg.Button("Filter"),sg.Button("Sort by Rating"), sg.Push()],
@@ -69,17 +69,10 @@ layout = [[tbl1],
 window = sg.Window("Prac Sac", layout, icon='', size=(1200, 400), resizable=True)  # Create window
 print(textbooks)
 
-
-# if search in row[0]:
-#     newValues.append(row)
-
-
-
-
 while True:  # while loop to enable button functionality.
     event, values = window.read()
 
-    if values['filteredsearch'] != '':  # if a keystroke entered in search field
+    if values['filteredsearch'] != '' and values['combo'] == 'Textbook':  # if a keystroke entered in search field
         search = values['filteredsearch'].lower()  # Convert search string to lowercase
         newValues = []
         newNEW_values = []
@@ -95,6 +88,21 @@ while True:  # while loop to enable button functionality.
 
         window["table"].update(newNEW_values)
 
+    if values['filteredsearch'] != '' and values['combo'] == 'Subject':  # if a keystroke entered in search field
+        search = values['filteredsearch'].lower()  # Convert search string to lowercase
+        newValues = []
+        newNEW_values = []
+        with open('newdata.csv', 'r') as file:  # Open dataset in read mode to go through each row to find both text
+            reader = csv.reader(file)
+            next(reader)  # Skip the header row
+            for row in reader:
+                if search in row[1].lower():  # Check if search string is present in the first column
+                    newValues.append(','.join(row))  # Join the columns back into a comma-separated string
+
+        for value in newValues:
+            newNEW_values.append(value.split(','))  # Split the comma-separated string into a list
+
+        window["table"].update(newNEW_values)
 
     if event == "Sort by Rating":
         with open('newdata.csv', 'r') as in_file:
@@ -109,8 +117,6 @@ while True:  # while loop to enable button functionality.
             sorteddata = sorted(data, key=lambda row: row[6], reverse=False)
             print(sorteddata)
             window["table"].update(values=sorteddata)
-
-
 
     # if statement to check if EXIT button has been pressed if so the loop breaks and the window is exited
     if event in (None, "Exit"):
