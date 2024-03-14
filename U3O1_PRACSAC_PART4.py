@@ -16,7 +16,7 @@ subjects = []
 seller = []
 purchaser = []
 rating = []
-nonechecker = ['none']
+
 
 
 # Creating empty lists related to searching ready to be appended to
@@ -29,7 +29,7 @@ allData = []
 
 isSearched = False  # this boolean will be used to check if searched data is currently presented on the GUI
 
-with open('Data/newdata.csv') as file:  # Read data from CSV file
+with open('newdata.csv') as file:  # Read data from CSV file
     reader = csv.DictReader(file)  # setting the reader to be a csv dictionary reader
 
     for col in reader:  # going through each column
@@ -69,31 +69,35 @@ layout = [[tbl1],
 window = sg.Window("Prac Sac", layout, icon='', size=(1200, 400), resizable=True)  # Create window
 print(textbooks)
 
+
+# if search in row[0]:
+#     newValues.append(row)
+
+
+
+
 while True:  # while loop to enable button functionality.
     event, values = window.read()
 
     if values['filteredsearch'] != '':  # if a keystroke entered in search field
-        search = values['filteredsearch']
-        new_values = []
+        search = values['filteredsearch'].lower()  # Convert search string to lowercase
+        newValues = []
         newNEW_values = []
-        with open('Data/newdata.csv','r') as file:  # Open dataset in read mode to go through each row to find both text
-            for row in file:
-                if all([x in row for x in search]):  # checks whether each element (x) in search_parts is present in the iterable row
-                    new_values.append(row)
+        with open('newdata.csv', 'r') as file:  # Open dataset in read mode to go through each row to find both text
+            reader = csv.reader(file)
+            next(reader)  # Skip the header row
+            for row in reader:
+                if search in row[0].lower():  # Check if search string is present in the first column
+                    newValues.append(','.join(row))  # Join the columns back into a comma-separated string
 
-        for value in new_values:
-            newNEW_values.append(value.strip().split(','))
+        for value in newValues:
+            newNEW_values.append(value.split(','))  # Split the comma-separated string into a list
 
         window["table"].update(newNEW_values)
 
-    else:
-        # display original unfiltered list
-        window["table"].update(allData)
-
-    #    if all([x in row.lower() for x in
 
     if event == "Sort by Rating":
-        with open('Data/newdata.csv', 'r') as in_file:
+        with open('newdata.csv', 'r') as in_file:
             in_reader = csv.reader(in_file)
             next(in_reader)
             data = list(in_reader)
@@ -102,12 +106,9 @@ while True:  # while loop to enable button functionality.
                     row[6] = 0
                 else:
                     row[6] = int(row[6])
-            sorteddata = sorted(data, key=lambda row: row[6], reverse=True)
+            sorteddata = sorted(data, key=lambda row: row[6], reverse=False)
             print(sorteddata)
             window["table"].update(values=sorteddata)
-
-
-
 
 
 
@@ -131,7 +132,7 @@ while True:  # while loop to enable button functionality.
         purchasertxt = str(values["txt_search2"].lower())
         searchParts = [str(values["txt_search1"]),str(values["txt_search2"])]  # create list of both text boxes entered data
 
-        with open('Data/newdata.csv','r') as file:  # Open dataset in read mode to go through each row to find both text
+        with open('newdata.csv','r') as file:  # Open dataset in read mode to go through each row to find both text
             for row in file:
                 if all([x in row.lower() for x in searchParts]):  # checks whether each element (x) in search_parts is present in the iterable row
                     searchData.append(row)  # adds that row to search data
@@ -159,7 +160,7 @@ while True:  # while loop to enable button functionality.
             if selected_textbook in row[0].lower() and selected_purchaser in row[4].lower():  # if statement to check if the selected book and purchaser is in the same row
                 allData[i][-1] = enteredRating  # if it is in the same row ([i]) it using ([-1]) selects the last column of the row and sets it to the rating
 
-        with open('Data/newdata.csv','w', newline='') as file:  # open / make the new csv file in write mode
+        with open('newdata.csv','w', newline='') as file:  # open / make the new csv file in write mode
             # newline='' ensures that the file object does not perform any newline translation
 
             writer = csv.writer(file)  # set the csv writer
@@ -173,7 +174,7 @@ while True:  # while loop to enable button functionality.
 
             searchParts = [str(values["txt_search1"]),str(values["txt_search2"])]  # create list of both text boxes entered data
 
-            with open('Data/newdata.csv','r') as file:  # Open dataset in read mode to go through each row to find both text
+            with open('newdata.csv','r') as file:  # Open dataset in read mode to go through each row to find both text
                 for row in file:
                     if all([x in row.lower() for x in searchParts]):  # checks whether each element (x) in search_parts is present in the iterable row
                         searchData.append(row)  # adds that row to search data
